@@ -1,6 +1,7 @@
 export interface CondominioConfig {
     nome: string
     slug: string
+    logo?: string
     cores: {
         primary: string
         secondary: string
@@ -33,6 +34,7 @@ export interface CondominioConfig {
 const config: CondominioConfig = {
     nome: 'Village Novus',
     slug: 'village-novus',
+    logo: '/logos/village-novus.jpg',
     cores: {
         primary: '#4a5d23',      // Verde oliva escuro
         secondary: '#6b7f4e',    // Verde oliva médio

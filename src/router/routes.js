@@ -1,7 +1,15 @@
 const routes = [
+  // Hub de Condomínios - Página Inicial
   {
     path: '/',
-    component: () => import('pages/IndexPage.vue'),
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'HubCondominios',
+        component: () => import('pages/IndexPage.vue'),
+      },
+    ],
   },
 
   // Rota dinâmica para condomínios

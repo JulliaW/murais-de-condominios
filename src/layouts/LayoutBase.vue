@@ -8,13 +8,28 @@
           :to="`/${route.params.condominio}`"
           class="row items-center no-decoration text-dark"
         >
-          <div class="logo-container q-mr-md" :style="{ background: store.cores.primary }">
-            <q-icon name="apartment" size="28px" color="white" />
+          <!-- Logo do Condomínio -->
+          <div class="logo-wrapper q-mr-md">
+            <img
+              v-if="store.condominioConfig?.logo"
+              :src="store.condominioConfig.logo"
+              :alt="store.nomeCondominio"
+              class="header-logo"
+              @error="$event.target.style.display = 'none'"
+            />
+            <div v-else class="logo-fallback" :style="{ background: store.cores.primary }">
+              <q-icon name="apartment" size="24px" color="white" />
+            </div>
           </div>
+
           <div class="column">
             <span
               class="text-h6 text-weight-bold"
-              style="font-family: 'Georgia', serif; letter-spacing: -0.5px"
+              style="
+                font-family: 'Playfair Display', Georgia, serif;
+                letter-spacing: -0.5px;
+                color: #2c3e2c;
+              "
             >
               {{ store.nomeCondominio || 'Village Novus' }}
             </span>
@@ -46,10 +61,22 @@
       <q-list class="q-py-md">
         <q-item-label header class="text-weight-bold q-pb-lg">
           <div class="row items-center">
-            <div class="logo-container q-mr-sm" :style="{ background: store.cores.primary }">
-              <q-icon name="apartment" size="20px" color="white" />
+            <!-- Logo no Drawer -->
+            <div class="logo-wrapper q-mr-sm">
+              <img
+                v-if="store.condominioConfig?.logo"
+                :src="store.condominioConfig.logo"
+                :alt="store.nomeCondominio"
+                class="drawer-logo"
+                @error="$event.target.style.display = 'none'"
+              />
+              <div v-else class="logo-fallback" :style="{ background: store.cores.primary }">
+                <q-icon name="apartment" size="18px" color="white" />
+              </div>
             </div>
-            {{ store.nomeCondominio }}
+            <span style="font-family: 'Playfair Display', Georgia, serif">
+              {{ store.nomeCondominio }}
+            </span>
           </div>
         </q-item-label>
 
@@ -156,9 +183,33 @@ onMounted(() => {
   min-height: calc(100vh - 70px - 50px);
 }
 
-.logo-container {
+.logo-wrapper {
   width: 45px;
   height: 45px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
+}
+
+.drawer-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.logo-fallback {
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
   display: flex;
   align-items: center;
