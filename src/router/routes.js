@@ -37,6 +37,11 @@ const routes = [
         name: 'CondominioFAQ',
         component: () => import('pages/FAQPage.vue'),
       },
+      {
+        path: 'sobre',
+        name: 'CondominioSobre',
+        component: () => import('pages/SobrePage.vue'),
+      },
     ],
   },
 

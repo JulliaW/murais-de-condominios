@@ -21,28 +21,29 @@ sheetsClient.interceptors.response.use(
 export interface Aviso {
     id: string
     titulo: string
-    conteudo: string
-    data: string
-    categoria: string
-    fixado: boolean
-    autor: string
+    descricao: string
+    dataPublicacao: string
+    dataExpiracao: string
+    prioridade: string
+    ativo: boolean
 }
 
 export interface Evento {
     id: string
     titulo: string
     descricao: string
-    dataInicio: string
+    data: string
     horario: string
     local: string
-    categoria: string
+    ativo: boolean
 }
 
 export interface FAQItem {
     id: string
     pergunta: string
     resposta: string
-    categoria: string
+    ordem: number
+    ativo: boolean
 }
 
 /**
@@ -66,15 +67,17 @@ export async function fetchSheetData<T>(url: string): Promise<T[]> {
 export async function fetchAvisos(url: string): Promise<Aviso[]> {
     const dados = await fetchSheetData<Record<string, string>>(url)
 
-    return dados.map((item, index) => ({
-        id: item.id || String(index + 1),
-        titulo: item.titulo || item.Título || 'Sem título',
-        conteudo: item.conteudo || item.Conteúdo || item.conteudo || '',
-        data: item.data || item.Data || new Date().toISOString(),
-        categoria: item.categoria || item.Categoria || 'Geral',
-        fixado: item.fixado?.toLowerCase() === 'sim' || item.Fixado?.toLowerCase() === 'sim' || false,
-        autor: item.autor || item.Autor || 'Administração',
-    }))
+    return dados
+        .filter((item) => item.ativo === 'TRUE' || item.Ativo === 'TRUE')
+        .map((item, index) => ({
+            id: item.id || String(index + 1),
+            titulo: item.titulo || item.Titulo || 'Sem título',
+            descricao: item.descricao || item.Descricao || '',
+            dataPublicacao: item.data_publicacao || item['Data Publicacao'] || item['Data Publicação'] || '',
+            dataExpiracao: item.data_expiracao || item['Data Expiracao'] || item['Data Expiração'] || '',
+            prioridade: item.prioridade || item.Prioridade || '',
+            ativo: item.ativo === 'TRUE' || item.Ativo === 'TRUE',
+        }))
 }
 
 /**
@@ -83,15 +86,17 @@ export async function fetchAvisos(url: string): Promise<Aviso[]> {
 export async function fetchEventos(url: string): Promise<Evento[]> {
     const dados = await fetchSheetData<Record<string, string>>(url)
 
-    return dados.map((item, index) => ({
-        id: item.id || String(index + 1),
-        titulo: item.titulo || item.Título || 'Sem título',
-        descricao: item.descricao || item.Descrição || item.descricao || '',
-        dataInicio: item.data || item.Data || item.dataInicio || item['Data Início'] || '',
-        horario: item.horario || item.Horário || item.Horario || '',
-        local: item.local || item.Local || 'A definir',
-        categoria: item.categoria || item.Categoria || 'Geral',
-    }))
+    return dados
+        .filter((item) => item.ativo === 'TRUE' || item.Ativo === 'TRUE')
+        .map((item, index) => ({
+            id: item.id || String(index + 1),
+            titulo: item.titulo || item.Titulo || 'Sem título',
+            descricao: item.descricao || item.Descricao || '',
+            data: item.data || item.Data || '',
+            horario: item.horario || item.Horario || item.Horário || '',
+            local: item.local || item.Local || '',
+            ativo: item.ativo === 'TRUE' || item.Ativo === 'TRUE',
+        }))
 }
 
 /**
@@ -100,12 +105,16 @@ export async function fetchEventos(url: string): Promise<Evento[]> {
 export async function fetchFAQ(url: string): Promise<FAQItem[]> {
     const dados = await fetchSheetData<Record<string, string>>(url)
 
-    return dados.map((item, index) => ({
-        id: item.id || String(index + 1),
-        pergunta: item.pergunta || item.Pergunta || 'Sem pergunta',
-        resposta: item.resposta || item.Resposta || 'Sem resposta',
-        categoria: item.categoria || item.Categoria || 'Geral',
-    }))
+    return dados
+        .filter((item) => item.ativo === 'TRUE' || item.Ativo === 'TRUE')
+        .map((item, index) => ({
+            id: item.id || String(index + 1),
+            pergunta: item.pergunta || item.Pergunta || 'Sem pergunta',
+            resposta: item.resposta || item.Resposta || 'Sem resposta',
+            ordem: parseInt(item.ordem || item.Ordem || String(index)),
+            ativo: item.ativo === 'TRUE' || item.Ativo === 'TRUE',
+        }))
+        .sort((a, b) => a.ordem - b.ordem)
 }
 
 export { sheetsClient }

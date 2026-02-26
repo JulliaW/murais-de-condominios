@@ -131,6 +131,7 @@ const menuItems = [
   { label: 'Avisos', path: '/avisos' },
   { label: 'Eventos', path: '/eventos' },
   { label: 'FAQ', path: '/faq' },
+  { label: 'Sobre', path: '/sobre' },
 ]
 
 function toggleRightDrawer() {
@@ -186,31 +187,30 @@ onMounted(() => {
 .logo-wrapper {
   width: 45px;
   height: 45px;
-  border-radius: 10px;
+  border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid #e8e8e3;
 }
 
 .header-logo {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: 4px;
+  object-fit: cover;
 }
 
 .drawer-logo {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  padding: 3px;
+  object-fit: cover;
 }
 
 .logo-fallback {
   width: 100%;
   height: 100%;
-  border-radius: 10px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;

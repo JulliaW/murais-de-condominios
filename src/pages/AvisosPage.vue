@@ -48,17 +48,15 @@
               <!-- Header do Card -->
               <div class="row items-center justify-between q-mb-md">
                 <span class="text-caption text-weight-medium" style="color: #8a9285">
-                  {{ formatarData(aviso.data) }}
+                  {{ formatarData(aviso.dataPublicacao) }}
                 </span>
                 <q-badge
-                  v-if="aviso.fixado"
-                  color="amber-2"
-                  text-color="amber-9"
+                  v-if="aviso.prioridade"
+                  :color="getPrioridadeColor(aviso.prioridade)"
                   class="q-px-sm q-py-xs"
                   style="border-radius: 6px; font-weight: 500"
                 >
-                  <q-icon name="push_pin" size="12px" class="q-mr-xs" />
-                  Fixado
+                  {{ aviso.prioridade }}
                 </q-badge>
               </div>
 
@@ -74,10 +72,18 @@
                 {{ aviso.titulo }}
               </h3>
 
-              <!-- Conteúdo -->
+              <!-- Descrição -->
               <p class="text-body2" style="color: #5a6358; line-height: 1.6">
-                {{ truncarTexto(aviso.conteudo, 120) }}
+                {{ truncarTexto(aviso.descricao, 150) }}
               </p>
+
+              <!-- Data de expiração -->
+              <div v-if="aviso.dataExpiracao" class="q-mt-md">
+                <span class="text-caption" style="color: #8a9285">
+                  <q-icon name="event_busy" size="14px" class="q-mr-xs" />
+                  Válido até: {{ formatarData(aviso.dataExpiracao) }}
+                </span>
+              </div>
             </q-card-section>
           </q-card>
         </div>
@@ -105,10 +111,7 @@ const store = useCondominioStore()
 
 const avisosOrdenados = computed(() => {
   return [...store.avisos].sort((a, b) => {
-    // Fixados primeiro, depois por data (mais recentes)
-    if (a.fixado && !b.fixado) return -1
-    if (!a.fixado && b.fixado) return 1
-    return new Date(b.data) - new Date(a.data)
+    return new Date(b.dataPublicacao) - new Date(a.dataPublicacao)
   })
 })
 
@@ -126,6 +129,17 @@ function truncarTexto(texto, limite) {
   if (!texto) return ''
   if (texto.length <= limite) return texto
   return texto.substring(0, limite).trim() + '...'
+}
+
+function getPrioridadeColor(prioridade) {
+  const cores = {
+    alta: 'negative',
+    media: 'warning',
+    baixa: 'positive',
+    urgente: 'negative',
+    normal: 'grey',
+  }
+  return cores[prioridade?.toLowerCase()] || 'grey'
 }
 </script>
 

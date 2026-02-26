@@ -65,7 +65,7 @@
               <!-- Informações -->
               <div class="column q-gutter-y-sm">
                 <!-- Data -->
-                <div class="row items-center">
+                <div v-if="evento.data" class="row items-center">
                   <q-icon
                     name="calendar_today"
                     size="18px"
@@ -73,24 +73,20 @@
                     style="color: #6b7f4e"
                   />
                   <span class="text-body2" style="color: #4a5d23; font-weight: 500">
-                    {{ formatarData(evento.dataInicio) }}
+                    {{ formatarData(evento.data) }}
                   </span>
                 </div>
 
                 <!-- Horário -->
                 <div v-if="evento.horario" class="row items-center">
                   <q-icon name="schedule" size="18px" class="q-mr-sm" style="color: #6b7f4e" />
-                  <span class="text-body2" style="color: #5a6358">
-                    {{ evento.horario }}
-                  </span>
+                  <span class="text-body2" style="color: #5a6358">{{ evento.horario }}</span>
                 </div>
 
                 <!-- Local -->
                 <div v-if="evento.local" class="row items-center">
                   <q-icon name="place" size="18px" class="q-mr-sm" style="color: #6b7f4e" />
-                  <span class="text-body2" style="color: #5a6358">
-                    {{ evento.local }}
-                  </span>
+                  <span class="text-body2" style="color: #5a6358">{{ evento.local }}</span>
                 </div>
               </div>
             </q-card-section>
@@ -120,13 +116,14 @@ const store = useCondominioStore()
 
 const eventosOrdenados = computed(() => {
   return [...store.eventos].sort((a, b) => {
-    return new Date(a.dataInicio) - new Date(b.dataInicio)
+    return new Date(a.data) - new Date(b.data)
   })
 })
 
 function formatarData(dataString) {
-  if (!dataString) return ''
+  if (!dataString || dataString.toLowerCase().includes('definir')) return dataString
   const data = new Date(dataString)
+  if (isNaN(data.getTime())) return dataString
   return data.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'long',

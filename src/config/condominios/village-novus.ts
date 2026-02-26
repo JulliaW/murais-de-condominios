@@ -18,6 +18,7 @@ export interface CondominioConfig {
         cidade: string
         estado: string
         cep: string
+        complemento?: string
     }
     planilhas: {
         avisos: string
@@ -45,12 +46,12 @@ const config: CondominioConfig = {
         textLight: '#5a6358',    // Verde acinzentado
     },
     endereco: {
-        rua: 'Avenida das Palmeiras',
-        numero: '1234',
-        bairro: 'Jardim Europa',
-        cidade: 'São Paulo',
+        rua: 'Av. Luiz Octávio da Silva Whitaker',
+        numero: '2300',
+        bairro: 'Maubisa',
+        cidade: 'Ribeirão Preto',
         estado: 'SP',
-        cep: '01450-000',
+        cep: '14022-496',
     },
     planilhas: {
         avisos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Avisos',
