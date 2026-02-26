@@ -153,7 +153,7 @@
               <!-- Mapa do Google Maps -->
               <div class="map-container">
                 <iframe
-                  :src="mapUrl"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3534.8761512599262!2d-47.788577624962514!3d-21.236471680465314!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94b9b8f46212dde5%3A0xbd7d3de5aecff414!2sAv.%20Luiz%20Octavio%20da%20Silva%20Whitaker%2C%202300%20-%20Maubisa%2C%20Ribeir%C3%A3o%20Preto%20-%20SP%2C%2014022-496!5e1!3m2!1spt-BR!2sbr!4v1772133842522!5m2!1spt-BR!2sbr"
                   width="100%"
                   height="100%"
                   style="border: 0; border-radius: 12px"
@@ -161,6 +161,15 @@
                   loading="lazy"
                   referrerpolicy="no-referrer-when-downgrade"
                 ></iframe>
+                <!-- <iframe
+                  :src="mapEmbedUrl"
+                  width="100%"
+                  height="100%"
+                  style="border: 0; border-radius: 12px"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                ></iframe> -->
               </div>
             </q-card-section>
           </q-card>
@@ -182,14 +191,17 @@ const enderecoCompleto = computed(() => {
   return `${end.rua}, ${end.numero} - ${end.bairro}, ${end.cidade} - ${end.estado}, ${end.cep}`
 })
 
-const mapUrl = computed(() => {
-  const end = store.endereco
-  if (!end) return ''
-  const enderecoFormatado = encodeURIComponent(
-    `${end.rua}, ${end.numero}, ${end.bairro}, ${end.cidade}, ${end.estado}, ${end.cep}`,
-  )
-  return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3737.0!2d-47.8!3d-21.1!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z${enderecoFormatado}!5e0!3m2!1spt-BR!2sbr!4v1`
-})
+// URL do Google Maps Embed com o endereço correto
+// const mapEmbedUrl = computed(() => {
+//   const end = store.endereco
+//   if (!end) return ''
+
+//   // Endereço formatado para URL
+//   const enderecoBusca = `${end.rua}, ${end.numero} - ${end.bairro}, ${end.cidade} - ${end.estado}`
+
+//   // Usar a API de embed do Google Maps com q= para busca por endereço
+//   return `https://maps.google.com/maps?q=${encodeURIComponent(enderecoBusca)}&t=&z=15&ie=UTF8&iwloc=&output=embed`
+// })
 
 function abrirGoogleMaps() {
   const end = store.endereco

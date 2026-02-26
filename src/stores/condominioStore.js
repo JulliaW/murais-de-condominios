@@ -45,17 +45,31 @@ export const useCondominioStore = defineStore('condominio', () => {
 
   const planilhas = computed(() => condominioConfig.value?.planilhas || null)
 
+  // Avisos recentes ordenados por data_publicacao
   const avisosRecentes = computed(() => {
     return [...avisos.value]
-      .sort((a, b) => new Date(b.data) - new Date(a.data))
+      .sort((a, b) => new Date(b.dataPublicacao) - new Date(a.dataPublicacao))
       .slice(0, 5)
   })
 
+  // Eventos próximos ordenados por data
   const eventosProximos = computed(() => {
     const hoje = new Date()
     return [...eventos.value]
-      .filter((e) => new Date(e.dataInicio) >= hoje)
-      .sort((a, b) => new Date(a.dataInicio) - new Date(b.dataInicio))
+      .filter((e) => {
+        // Se data for "a definir" ou similar, mostrar mesmo assim
+        if (!e.data || e.data.toLowerCase().includes('definir')) return true
+        const dataEvento = new Date(e.data)
+        return !isNaN(dataEvento.getTime()) && dataEvento >= hoje
+      })
+      .sort((a, b) => {
+        const dataA = new Date(a.data)
+        const dataB = new Date(b.data)
+        // Se data inválida, colocar no final
+        if (isNaN(dataA.getTime())) return 1
+        if (isNaN(dataB.getTime())) return -1
+        return dataA - dataB
+      })
       .slice(0, 5)
   })
 

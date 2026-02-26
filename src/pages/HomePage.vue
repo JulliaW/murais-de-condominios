@@ -99,18 +99,8 @@
                 <q-card-section class="q-pa-md">
                   <div class="row items-center justify-between q-mb-sm">
                     <span class="text-caption" style="color: #8a9285">
-                      {{ formatarData(aviso.data) }}
+                      {{ formatarData(aviso.dataPublicacao) }}
                     </span>
-                    <q-badge
-                      v-if="aviso.fixado"
-                      color="amber-2"
-                      text-color="amber-9"
-                      class="q-px-xs"
-                      style="border-radius: 4px; font-size: 10px"
-                    >
-                      <q-icon name="push_pin" size="10px" class="q-mr-xs" />
-                      Fixado
-                    </q-badge>
                   </div>
                   <h3
                     class="text-subtitle1 text-weight-bold"
@@ -181,7 +171,7 @@
                         style="color: #6b7f4e"
                       />
                       <span class="text-caption" style="color: #4a5d23; font-weight: 500">
-                        {{ formatarData(evento.dataInicio) }}
+                        {{ formatarData(evento.data) }}
                       </span>
                     </div>
                     <div v-if="evento.local" class="row items-center">
@@ -218,8 +208,9 @@ import { useCondominioStore } from 'src/stores/condominioStore'
 const store = useCondominioStore()
 
 function formatarData(dataString) {
-  if (!dataString) return ''
+  if (!dataString || dataString.toLowerCase().includes('definir')) return dataString
   const data = new Date(dataString)
+  if (isNaN(data.getTime())) return dataString
   return data.toLocaleDateString('pt-BR', {
     day: '2-digit',
     month: 'short',
