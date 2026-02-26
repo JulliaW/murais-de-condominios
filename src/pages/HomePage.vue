@@ -39,19 +39,21 @@
           </div>
           <div class="col-12 col-md-6 flex flex-center">
             <div
-              class="hero-image-placeholder"
+              class="hero-image-container"
               style="
                 width: 100%;
                 max-width: 450px;
                 height: 350px;
-                background: linear-gradient(135deg, #6b7f4e 0%, #4a5d23 100%);
                 border-radius: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(74, 93, 35, 0.15);
               "
             >
-              <q-icon name="apartment" size="120px" color="white" style="opacity: 0.3" />
+              <img
+                src="~assets/cond-village.png"
+                alt="Village Novus"
+                style="width: 100%; height: 100%; object-fit: cover"
+              />
             </div>
           </div>
         </div>
