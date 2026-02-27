@@ -1,5 +1,20 @@
 <template>
   <q-page style="background: #f8f7f4">
+    <!-- Banner de Aviso - Não é canal oficial -->
+    <q-banner
+      class="q-py-md"
+      style="background: #fff8e1; border-left: 4px solid #f9a825; color: #5d4037"
+    >
+      <template v-slot:avatar>
+        <q-icon name="warning_amber" color="warning" size="32px" />
+      </template>
+      <div class="text-weight-medium">Aviso Importante</div>
+      <div class="text-body2">
+        Este site é uma iniciativa independente de moradores para centralizar informações do
+        condomínio. Não é um canal oficial de comunicação e não substitui os meios oficiais
+        estabelecidos.
+      </div>
+    </q-banner>
     <!-- ============================================ -->
     <!-- HERO SECTION -->
     <!-- ============================================ -->
