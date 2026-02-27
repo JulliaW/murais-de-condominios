@@ -8,6 +8,7 @@ import {
   fetchAvisos,
   fetchEventos,
   fetchFAQ,
+  fetchProfissionais,
 } from 'src/services/sheetsService'
 
 export const useCondominioStore = defineStore('condominio', () => {
@@ -17,6 +18,7 @@ export const useCondominioStore = defineStore('condominio', () => {
   const avisos = ref([])
   const eventos = ref([])
   const faq = ref([])
+  const profissionais = ref([])
   const loading = ref(false)
   const error = ref(null)
 
@@ -73,6 +75,12 @@ export const useCondominioStore = defineStore('condominio', () => {
       .slice(0, 5)
   })
 
+  // Tipos de serviço únicos dos profissionais
+  const tiposServico = computed(() => {
+    const tipos = new Set(profissionais.value.map((p) => p.tipoServico).filter(Boolean))
+    return Array.from(tipos).sort()
+  })
+
   // Actions
   function setCondominio(slug) {
     if (!slug || !condominioExiste(slug)) {
@@ -98,6 +106,7 @@ export const useCondominioStore = defineStore('condominio', () => {
     try {
       const { planilhas: urls } = condominioConfig.value
 
+      // Carrega dados principais (avisos, eventos, faq)
       const [avisosData, eventosData, faqData] = await Promise.all([
         urls.avisos ? fetchAvisos(urls.avisos) : Promise.resolve([]),
         urls.eventos ? fetchEventos(urls.eventos) : Promise.resolve([]),
@@ -107,6 +116,17 @@ export const useCondominioStore = defineStore('condominio', () => {
       avisos.value = avisosData
       eventos.value = eventosData
       faq.value = faqData
+
+      // Carrega profissionais separadamente (não bloqueia os outros dados)
+      if (urls.profissionais) {
+        try {
+          const profissionaisData = await fetchProfissionais(urls.profissionais)
+          profissionais.value = profissionaisData
+        } catch (profErr) {
+          console.warn('Erro ao carregar profissionais (não crítico):', profErr)
+          profissionais.value = []
+        }
+      }
     } catch (err) {
       console.error('Erro ao carregar dados:', err)
       error.value = 'Falha ao carregar dados do condomínio'
@@ -119,6 +139,7 @@ export const useCondominioStore = defineStore('condominio', () => {
     avisos.value = []
     eventos.value = []
     faq.value = []
+    profissionais.value = []
     error.value = null
   }
 
@@ -129,6 +150,7 @@ export const useCondominioStore = defineStore('condominio', () => {
     avisos,
     eventos,
     faq,
+    profissionais,
     loading,
     error,
 
@@ -141,6 +163,7 @@ export const useCondominioStore = defineStore('condominio', () => {
     planilhas,
     avisosRecentes,
     eventosProximos,
+    tiposServico,
 
     // Actions
     setCondominio,

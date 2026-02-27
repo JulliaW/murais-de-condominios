@@ -314,6 +314,221 @@
       </section>
 
       <!-- ============================================ -->
+      <!-- PROFISSIONAIS SECTION -->
+      <!-- ============================================ -->
+      <section
+        id="profissionais"
+        class="section-padding q-px-md"
+        style="background: linear-gradient(180deg, #f0efe9 0%, #f8f7f4 100%)"
+      >
+        <div class="container" style="max-width: 1200px; margin: 0 auto">
+          <!-- Header -->
+          <div class="text-center q-mb-xl">
+            <h2
+              class="text-h3 text-weight-bold q-mb-sm"
+              style="font-family: 'Playfair Display', Georgia, serif; color: #2c3e2c"
+            >
+              Profissionais Indicados
+            </h2>
+            <p
+              class="text-body1 text-weight-light"
+              style="color: #5a6358; max-width: 600px; margin: 0 auto"
+            >
+              Encontre profissionais indicados pelos moradores do condomínio.
+            </p>
+          </div>
+
+          <!-- Filtros -->
+          <div v-if="store.tiposServico.length > 0" class="q-mb-lg">
+            <div class="row justify-center q-gutter-sm">
+              <q-chip
+                clickable
+                :color="filtroServico === '' ? 'primary' : 'grey-3'"
+                :text-color="filtroServico === '' ? 'white' : 'dark'"
+                @click="filtroServico = ''"
+              >
+                Todos
+              </q-chip>
+              <q-chip
+                v-for="tipo in store.tiposServico"
+                :key="tipo"
+                clickable
+                :color="filtroServico === tipo ? 'primary' : 'grey-3'"
+                :text-color="filtroServico === tipo ? 'white' : 'dark'"
+                @click="filtroServico = tipo"
+              >
+                {{ tipo }}
+              </q-chip>
+            </div>
+          </div>
+
+          <!-- Botão Indicar -->
+          <div class="text-center q-mb-xl">
+            <q-btn
+              unelevated
+              icon="add"
+              label="Indicar Profissional"
+              style="background: #4a5d23; color: white; border-radius: 8px"
+              @click="mostrarModalIndicacao = true"
+            />
+          </div>
+
+          <!-- Grid de Profissionais -->
+          <template v-if="profissionaisPaginados.length > 0">
+            <div
+              class="row q-col-gutter-lg"
+              :class="{ 'justify-center': profissionaisPaginados.length < 3 }"
+            >
+              <div
+                v-for="profissional in profissionaisPaginados"
+                :key="profissional.id"
+                class="col-12 col-md-6 col-lg-4"
+              >
+                <q-card
+                  class="profissional-card"
+                  flat
+                  bordered
+                  style="border-radius: 16px; border-color: #e8e8e3"
+                >
+                  <q-card-section class="q-pa-lg">
+                    <!-- Tipo -->
+                    <q-badge
+                      color="primary"
+                      class="q-mb-md"
+                      style="border-radius: 6px; font-weight: 500"
+                    >
+                      {{ profissional.tipoServico || 'Serviço' }}
+                    </q-badge>
+
+                    <!-- Nome -->
+                    <h3
+                      class="text-h6 text-weight-bold q-mb-sm"
+                      style="
+                        font-family: 'Playfair Display', Georgia, serif;
+                        color: #2c3e2c;
+                        line-height: 1.3;
+                      "
+                    >
+                      {{ profissional.nome }}
+                    </h3>
+
+                    <!-- Comentários -->
+                    <p
+                      v-if="profissional.comentarios"
+                      class="text-body2 q-mb-md"
+                      style="color: #5a6358; line-height: 1.6; font-style: italic"
+                    >
+                      "{{ truncarTexto(profissional.comentarios, 100) }}"
+                    </p>
+
+                    <!-- Contato -->
+                    <div class="column q-gutter-y-sm">
+                      <!-- Telefone -->
+                      <div v-if="profissional.telefone" class="row items-center">
+                        <q-icon name="phone" size="18px" class="q-mr-sm" style="color: #6b7f4e" />
+                        <a
+                          :href="`https://wa.me/${profissional.telefone.replace(/\D/g, '')}`"
+                          target="_blank"
+                          class="text-body2"
+                          style="color: #4a5d23; text-decoration: none; font-weight: 500"
+                        >
+                          {{ profissional.telefone }}
+                        </a>
+                      </div>
+
+                      <!-- Instagram -->
+                      <div v-if="profissional.instagram" class="row items-center">
+                        <q-icon
+                          name="photo_camera"
+                          size="18px"
+                          class="q-mr-sm"
+                          style="color: #6b7f4e"
+                        />
+                        <a
+                          :href="`https://instagram.com/${profissional.instagram.replace('@', '')}`"
+                          target="_blank"
+                          class="text-body2"
+                          style="color: #4a5d23; text-decoration: none"
+                        >
+                          {{ profissional.instagram }}
+                        </a>
+                      </div>
+
+                      <!-- Nota -->
+                      <div v-if="profissional.nota" class="row items-center q-mt-sm">
+                        <q-rating
+                          :model-value="parseFloat(profissional.nota) || 0"
+                          max="5"
+                          size="1.2rem"
+                          color="amber-5"
+                          readonly
+                        />
+                        <span class="text-caption q-ml-sm" style="color: #8a9285">
+                          {{ profissional.nota }}/5
+                        </span>
+                      </div>
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </div>
+          </template>
+
+          <!-- Paginação -->
+          <div v-if="totalPaginasProfissionais > 1" class="row justify-center q-mt-xl">
+            <q-pagination
+              v-model="profissionaisPagina"
+              :max="totalPaginasProfissionais"
+              direction-links
+              boundary-links
+              color="primary"
+              active-color="primary"
+              active-text-color="white"
+            />
+          </div>
+
+          <!-- Empty State -->
+          <div
+            v-else-if="profissionaisFiltrados.length === 0"
+            class="flex flex-center column q-py-xl"
+            style="background: white; border-radius: 16px; padding: 60px"
+          >
+            <q-icon name="engineering" size="64px" style="color: #c5ccc0" />
+            <p class="text-h6 q-mt-md" style="color: #5a6358">Nenhum profissional indicado</p>
+            <p class="text-body2" style="color: #8a9285">Seja o primeiro a indicar!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modal de Indicação -->
+      <q-dialog v-model="mostrarModalIndicacao" persistent maximized>
+        <q-card style="background: #f8f7f4">
+          <q-card-section class="row items-center justify-between">
+            <h3
+              class="text-h5 text-weight-bold"
+              style="font-family: 'Playfair Display', Georgia, serif; color: #2c3e2c"
+            >
+              Indicar Profissional
+            </h3>
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+          <q-card-section style="height: calc(100vh - 100px); padding: 0">
+            <iframe
+              src="https://docs.google.com/forms/d/e/1FAIpQLSfNGE4EA1Wo9UE0yDEoc13-TuWOWhbybQqSGoSgRtF7thPGSA/viewform?embedded=true"
+              width="100%"
+              height="100%"
+              frameborder="0"
+              marginheight="0"
+              marginwidth="0"
+              style="border: none"
+            >
+              Carregando...
+            </iframe>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <!-- ============================================ -->
       <!-- FAQ SECTION -->
       <!-- ============================================ -->
       <section id="faq" class="section-padding q-px-md">
@@ -567,6 +782,65 @@
       </section>
 
       <!-- ============================================ -->
+      <!-- FEEDBACK ANÔNIMO SECTION -->
+      <!-- ============================================ -->
+      <section id="feedback" class="section-padding q-px-md" style="background: #f8f7f4">
+        <div class="container" style="max-width: 900px; margin: 0 auto">
+          <!-- Header -->
+          <div class="text-center q-mb-xl">
+            <h2
+              class="text-h3 text-weight-bold q-mb-sm"
+              style="font-family: 'Playfair Display', Georgia, serif; color: #2c3e2c"
+            >
+              Reclamações e Sugestões
+            </h2>
+            <p
+              class="text-body1 text-weight-light"
+              style="color: #5a6358; max-width: 600px; margin: 0 auto"
+            >
+              Envie seu feedback sobre o condomínio de forma anônima.
+            </p>
+          </div>
+
+          <!-- Alerta de Anonimato -->
+          <q-banner
+            class="q-mb-lg"
+            style="background: #e8f5e9; color: #2e7d32; border-radius: 12px"
+          >
+            <template v-slot:avatar>
+              <q-icon name="lock" color="positive" size="32px" />
+            </template>
+            <div class="text-weight-medium">Seu feedback é totalmente anônimo</div>
+            <div class="text-body2">
+              Envie suas reclamações, sugestões ou elogios de forma confidencial. Sua identidade não
+              será revelada.
+            </div>
+          </q-banner>
+
+          <!-- Formulário Embed -->
+          <q-card
+            flat
+            bordered
+            style="border-radius: 16px; border-color: #e8e8e3; overflow: hidden"
+          >
+            <div style="height: 800px">
+              <iframe
+                src="https://docs.google.com/forms/d/e/1FAIpQLSfrksnxBhjO5whrsM9VRFsGpr749o5N-7je34N9BzcM88hiTw/viewform?embedded=true"
+                width="100%"
+                height="100%"
+                frameborder="0"
+                marginheight="0"
+                marginwidth="0"
+                style="border: none"
+              >
+                Carregando...
+              </iframe>
+            </div>
+          </q-card>
+        </div>
+      </section>
+
+      <!-- ============================================ -->
       <!-- BACK TO TOP -->
       <!-- ============================================ -->
       <div class="text-center q-py-xl">
@@ -591,6 +865,33 @@ const store = useCondominioStore()
 // Limites para exibição de cards
 const avisosLimit = ref(6)
 const eventosLimit = ref(6)
+
+// Filtro e modal de profissionais
+const filtroServico = ref('')
+const mostrarModalIndicacao = ref(false)
+const profissionaisPagina = ref(1)
+const profissionaisPorPagina = 9
+
+// Computed para profissionais filtrados
+const profissionaisFiltrados = computed(() => {
+  let resultado = store.profissionais
+  if (filtroServico.value) {
+    resultado = resultado.filter((p) => p.tipoServico === filtroServico.value)
+  }
+  return resultado
+})
+
+// Computed para profissionais paginados
+const profissionaisPaginados = computed(() => {
+  const inicio = (profissionaisPagina.value - 1) * profissionaisPorPagina
+  const fim = inicio + profissionaisPorPagina
+  return profissionaisFiltrados.value.slice(inicio, fim)
+})
+
+// Total de páginas
+const totalPaginasProfissionais = computed(() => {
+  return Math.ceil(profissionaisFiltrados.value.length / profissionaisPorPagina)
+})
 
 // Computed para ordenação
 const avisosOrdenados = computed(() => {
@@ -707,6 +1008,18 @@ function abrirGoogleMaps() {
 
 .aviso-card:hover,
 .evento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(74, 93, 35, 0.08);
+  border-color: #d0d5c8;
+}
+
+.profissional-card {
+  background: white;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.profissional-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 40px rgba(74, 93, 35, 0.08);
   border-color: #d0d5c8;

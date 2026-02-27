@@ -133,6 +133,8 @@ const menuItems = [
   { label: 'Início', id: 'inicio' },
   { label: 'Avisos', id: 'avisos' },
   { label: 'Eventos', id: 'eventos' },
+  { label: 'Profissionais', id: 'profissionais' },
+  { label: 'Feedback', id: 'feedback' },
   { label: 'FAQ', id: 'faq' },
   { label: 'Sobre', id: 'sobre' },
 ]

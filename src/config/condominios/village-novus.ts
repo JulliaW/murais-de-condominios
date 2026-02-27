@@ -24,6 +24,7 @@ export interface CondominioConfig {
         avisos: string
         eventos: string
         faq: string
+        profissionais?: string
     }
     contato?: {
         email: string
@@ -57,6 +58,7 @@ const config: CondominioConfig = {
         avisos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Avisos',
         eventos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Eventos',
         faq: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/FAQ',
+        profissionais: 'https://opensheet.elk.sh/1Ixb_497ZDKR5BMdAeAH0ofIslvsuZ4eKOKw09gPzInw/Indicações',
     },
     contato: {
         email: 'contato@villagenovus.com.br',
