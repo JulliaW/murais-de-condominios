@@ -58,7 +58,15 @@
     </q-header>
 
     <!-- Drawer Mobile -->
-    <q-drawer v-model="rightDrawerOpen" side="right" bordered class="bg-white">
+    <q-drawer
+      v-model="rightDrawerOpen"
+      side="right"
+      bordered
+      class="bg-white"
+      :width="280"
+      behavior="mobile"
+      overlay
+    >
       <q-list class="q-py-md">
         <q-item-label header class="text-weight-bold q-pb-lg">
           <div class="row items-center">
@@ -128,15 +136,15 @@ const store = useCondominioStore()
 const rightDrawerOpen = ref(false)
 const activeSection = ref('inicio')
 
-// Menu com IDs para navegação por âncoras
+// Menu com IDs para navegação por âncoras (ordem deve seguir a ordem das seções na página)
 const menuItems = [
   { label: 'Início', id: 'inicio' },
   { label: 'Avisos', id: 'avisos' },
   { label: 'Eventos', id: 'eventos' },
   { label: 'Profissionais', id: 'profissionais' },
-  { label: 'Feedback', id: 'feedback' },
   { label: 'FAQ', id: 'faq' },
   { label: 'Sobre', id: 'sobre' },
+  { label: 'Feedback', id: 'feedback' },
 ]
 
 function toggleRightDrawer() {
@@ -145,6 +153,9 @@ function toggleRightDrawer() {
 
 // Scroll suave para seção
 function scrollToSection(sectionId) {
+  // Atualiza o indicativo visual imediatamente ao clicar
+  activeSection.value = sectionId
+
   const element = document.getElementById(sectionId)
   if (element) {
     const offset = 80 // altura do header
@@ -160,6 +171,8 @@ function scrollToSection(sectionId) {
 
 // Handler para clique no menu mobile
 function handleMobileMenuClick(sectionId) {
+  // Atualiza o indicativo visual imediatamente ao clicar
+  activeSection.value = sectionId
   scrollToSection(sectionId)
   rightDrawerOpen.value = false
 }
