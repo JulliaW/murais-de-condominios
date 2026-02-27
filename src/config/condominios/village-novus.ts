@@ -58,12 +58,12 @@ const config: CondominioConfig = {
         avisos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Avisos',
         eventos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Eventos',
         faq: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/FAQ',
-        profissionais: 'https://opensheet.elk.sh/1Ixb_497ZDKR5BMdAeAH0ofIslvsuZ4eKOKw09gPzInw/Indicações',
+        profissionais: 'https://script.google.com/macros/s/AKfycbyr6JcgsCykr98ZJ9FoWG6qvSJHjXJTtNnJOv0ezd0pJwdu0ogfq2t3PaOft_Jaay1jAA/exec',
     },
     contato: {
         email: 'contato@villagenovus.com.br',
-        telefone: '(11) 3456-7890',
-        whatsapp: '(11) 98765-4321',
+        telefone: '(16) 9999-9999',
+        whatsapp: '(11) 99999-9999',
     },
 }
 

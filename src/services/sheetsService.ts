@@ -129,23 +129,79 @@ export async function fetchFAQ(url: string): Promise<FAQItem[]> {
 }
 
 /**
- * Busca profissionais indicados
+ * Busca profissionais indicados via Google Apps Script
+ * O Apps Script retorna array de arrays: [[cabecalho], [dados], [dados]...]
  */
 export async function fetchProfissionais(url: string): Promise<Profissional[]> {
-    const dados = await fetchSheetData<Record<string, string>>(url)
+    try {
+        const response = await sheetsClient.get<any[][]>(url)
+        const dados = response.data
 
-    return dados
-        .map((item, index) => ({
-            id: String(index + 1),
-            data: item['Carimbo de data/hora'] || item.data || '',
-            tipoServico: item['Tipo de serviço'] || item.tipo_servico || item.Tipo || '',
-            nome: item['Nome do profissional / empresa'] || item.nome || item.Nome || 'Sem nome',
-            telefone: item['Telefone / WhatsApp'] || item.telefone || item.Telefone || '',
-            instagram: item['Instagram (caso tenha)'] || item.instagram || item.Instagram || '',
-            comentarios: item['Comentários adicionais'] || item.comentarios || item.Comentários || '',
-            nota: item['Notas do serviço'] || item.nota || item.Nota || '',
-        }))
-        .sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
+        console.log('Dados do Apps Script:', dados.slice(0, 5))
+
+        // Se não houver dados suficientes, retorna vazio
+        if (!dados || dados.length < 3) {
+            console.log('Poucos dados na planilha')
+            return []
+        }
+
+        // Pula as primeiras linhas vazias e encontra o cabeçalho
+        let headerRowIndex = 0
+        for (let i = 0; i < Math.min(dados.length, 5); i++) {
+            const row = dados[i]
+            if (row && row[0] && String(row[0]).includes('Carimbo')) {
+                headerRowIndex = i
+                break
+            }
+        }
+
+        // Pega os cabeçalhos
+        const headers = dados[headerRowIndex]
+
+        // Mapeia os índices das colunas importantes
+        const colData = headers.findIndex((h: any) => h && String(h).includes('Carimbo'))
+        const colTipo = headers.findIndex((h: any) => h && String(h).includes('Tipo'))
+        const colNome = headers.findIndex((h: any) => h && String(h).includes('Nome'))
+        const colTelefone = headers.findIndex((h: any) => h && String(h).includes('Telefone'))
+        const colInstagram = headers.findIndex((h: any) => h && String(h).includes('Instagram'))
+        const colComentarios = headers.findIndex((h: any) => h && String(h).includes('Comentários'))
+        const colNota = headers.findIndex((h: any) => h && String(h).includes('Notas'))
+
+        console.log('Índices das colunas:', { colData, colTipo, colNome, colTelefone, colInstagram, colComentarios, colNota })
+
+        // Processa os dados a partir da linha após os cabeçalhos
+        const profissionais: Profissional[] = []
+        for (let i = headerRowIndex + 1; i < dados.length; i++) {
+            const row = dados[i]
+
+            // Pula linhas vazias ou sem dados suficientes
+            if (!row || row.length < 3) continue
+
+            // Pega os valores pelos índices encontrados
+            const getValue = (index: number) => index >= 0 && index < row.length ? String(row[index] || '') : ''
+
+            // Verifica se é uma linha de dados válida (começa com data)
+            const dataValue = getValue(colData)
+            if (dataValue && dataValue.match(/^\d{2}\/\d{2}\/\d{4}/)) {
+                profissionais.push({
+                    id: String(profissionais.length + 1),
+                    data: dataValue,
+                    tipoServico: getValue(colTipo),
+                    nome: getValue(colNome) || 'Sem nome',
+                    telefone: getValue(colTelefone),
+                    instagram: getValue(colInstagram),
+                    comentarios: getValue(colComentarios),
+                    nota: getValue(colNota),
+                })
+            }
+        }
+
+        console.log('Profissionais processados:', profissionais.slice(0, 3))
+        return profissionais
+    } catch (error) {
+        console.error('Erro ao buscar profissionais:', error)
+        throw new Error('Falha ao carregar dados dos profissionais')
+    }
 }
 
 export { sheetsClient }
