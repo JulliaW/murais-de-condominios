@@ -58,7 +58,7 @@ const config: CondominioConfig = {
         avisos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Avisos',
         eventos: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/Eventos',
         faq: 'https://opensheet.elk.sh/1-bdsoR-RZs52H0Js0oOM2D-QnuFjl6AEHbvVnVH-vOg/FAQ',
-        profissionais: 'https://script.google.com/macros/s/AKfycbyr6JcgsCykr98ZJ9FoWG6qvSJHjXJTtNnJOv0ezd0pJwdu0ogfq2t3PaOft_Jaay1jAA/exec',
+        profissionais: 'https://docs.google.com/spreadsheets/d/1Ixb_497ZDKR5BMdAeAH0ofIslvsuZ4eKOKw09gPzInw/gviz/tq?tqx=out:json',
     },
     contato: {
         email: 'contato@villagenovus.com.br',

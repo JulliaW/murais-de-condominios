@@ -339,27 +339,25 @@
           </div>
 
           <!-- Filtros -->
-          <div v-if="store.tiposServico.length > 0" class="q-mb-lg">
-            <div class="row justify-center q-gutter-sm">
-              <q-chip
-                clickable
-                :color="filtroServico === '' ? 'primary' : 'grey-3'"
-                :text-color="filtroServico === '' ? 'white' : 'dark'"
-                @click="filtroServico = ''"
-              >
-                Todos
-              </q-chip>
-              <q-chip
-                v-for="tipo in store.tiposServico"
-                :key="tipo"
-                clickable
-                :color="filtroServico === tipo ? 'primary' : 'grey-3'"
-                :text-color="filtroServico === tipo ? 'white' : 'dark'"
-                @click="filtroServico = tipo"
-              >
-                {{ tipo }}
-              </q-chip>
-            </div>
+          <div v-if="store.tiposServico.length > 0" class="q-mb-lg row justify-center">
+            <q-select
+              v-model="filtroServico"
+              :options="[
+                { label: 'Todos os tipos', value: '' },
+                ...store.tiposServico.map((t) => ({ label: t, value: t })),
+              ]"
+              option-value="value"
+              option-label="label"
+              emit-value
+              map-options
+              outlined
+              dense
+              style="min-width: 280px; max-width: 400px"
+              bg-color="white"
+              label="Filtrar por tipo de serviço"
+              clearable
+              @clear="filtroServico = ''"
+            />
           </div>
 
           <!-- Botão Indicar -->

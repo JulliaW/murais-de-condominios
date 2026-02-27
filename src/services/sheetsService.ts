@@ -129,59 +129,59 @@ export async function fetchFAQ(url: string): Promise<FAQItem[]> {
 }
 
 /**
- * Busca profissionais indicados via Google Apps Script
- * O Apps Script retorna array de arrays: [[cabecalho], [dados], [dados]...]
+ * Busca profissionais indicados via Google Visualization API
+ * O endpoint retorna JSONP que precisa ser parseado
  */
 export async function fetchProfissionais(url: string): Promise<Profissional[]> {
     try {
-        const response = await sheetsClient.get<any[][]>(url)
-        const dados = response.data
+        const response = await sheetsClient.get<string>(url)
+        const jsonpData = response.data
 
-        console.log('Dados do Apps Script:', dados.slice(0, 5))
+        console.log('Resposta raw:', jsonpData.substring(0, 200))
 
-        // Se não houver dados suficientes, retorna vazio
-        if (!dados || dados.length < 3) {
-            console.log('Poucos dados na planilha')
+        // Extrai o JSON do JSONP
+        // Formato: /*O_o*/google.visualization.Query.setResponse({...})
+        const match = jsonpData.match(/google\.visualization\.Query\.setResponse\((.*)\);?$/s)
+        if (!match) {
+            console.error('Não conseguiu parsear JSONP')
             return []
         }
 
-        // Pula as primeiras linhas vazias e encontra o cabeçalho
-        let headerRowIndex = 0
-        for (let i = 0; i < Math.min(dados.length, 5); i++) {
-            const row = dados[i]
-            if (row && row[0] && String(row[0]).includes('Carimbo')) {
-                headerRowIndex = i
-                break
-            }
-        }
+        const jsonData = JSON.parse(match[1])
+        console.log('Dados parseados:', jsonData)
 
-        // Pega os cabeçalhos
-        const headers = dados[headerRowIndex]
+        const { cols, rows } = jsonData.table
 
-        // Mapeia os índices das colunas importantes
-        const colData = headers.findIndex((h: any) => h && String(h).includes('Carimbo'))
-        const colTipo = headers.findIndex((h: any) => h && String(h).includes('Tipo'))
-        const colNome = headers.findIndex((h: any) => h && String(h).includes('Nome'))
-        const colTelefone = headers.findIndex((h: any) => h && String(h).includes('Telefone'))
-        const colInstagram = headers.findIndex((h: any) => h && String(h).includes('Instagram'))
-        const colComentarios = headers.findIndex((h: any) => h && String(h).includes('Comentários'))
-        const colNota = headers.findIndex((h: any) => h && String(h).includes('Notas'))
+        console.log('Colunas:', cols.map((c: any) => c.label))
+        console.log('Primeira linha:', rows[0])
 
-        console.log('Índices das colunas:', { colData, colTipo, colNome, colTelefone, colInstagram, colComentarios, colNota })
+        // Mapeia os índices das colunas
+        const colData = cols.findIndex((c: any) => c.label?.includes('Carimbo'))
+        const colTipo = cols.findIndex((c: any) => c.label?.includes('Tipo'))
+        const colNome = cols.findIndex((c: any) => c.label?.includes('Nome'))
+        const colTelefone = cols.findIndex((c: any) => c.label?.includes('Telefone'))
+        const colInstagram = cols.findIndex((c: any) => c.label?.includes('Instagram'))
+        const colComentarios = cols.findIndex((c: any) => c.label?.includes('Comentários'))
+        const colNota = cols.findIndex((c: any) => c.label?.includes('Notas'))
 
-        // Processa os dados a partir da linha após os cabeçalhos
+        console.log('Índices:', { colData, colTipo, colNome, colTelefone, colInstagram, colComentarios, colNota })
+
+        // Processa as linhas
         const profissionais: Profissional[] = []
-        for (let i = headerRowIndex + 1; i < dados.length; i++) {
-            const row = dados[i]
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i].c
 
-            // Pula linhas vazias ou sem dados suficientes
-            if (!row || row.length < 3) continue
+            // Pega o valor de uma célula (pode ser v.f ou v)
+            const getValue = (index: number) => {
+                if (index < 0 || index >= row.length) return ''
+                const cell = row[index]
+                if (!cell) return ''
+                return cell.f || String(cell.v || '')
+            }
 
-            // Pega os valores pelos índices encontrados
-            const getValue = (index: number) => index >= 0 && index < row.length ? String(row[index] || '') : ''
-
-            // Verifica se é uma linha de dados válida (começa com data)
             const dataValue = getValue(colData)
+
+            // Verifica se é uma linha válida (tem data)
             if (dataValue && dataValue.match(/^\d{2}\/\d{2}\/\d{4}/)) {
                 profissionais.push({
                     id: String(profissionais.length + 1),
