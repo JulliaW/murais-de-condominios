@@ -157,24 +157,36 @@ function scrollToSection(sectionId) {
   activeSection.value = sectionId
 
   const element = document.getElementById(sectionId)
-  if (element) {
-    const offset = 80 // altura do header
+  if (!element) return
+
+  // Usar scrollIntoView com behavior smooth (mais confiável em mobile)
+  element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+  // Ajuste fino após o scroll para considerar a altura do header
+  setTimeout(() => {
+    const headerOffset = 80
     const elementPosition = element.getBoundingClientRect().top
-    const offsetPosition = elementPosition + window.pageYOffset - offset
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset
 
     window.scrollTo({
       top: offsetPosition,
       behavior: 'smooth',
     })
-  }
+  }, 100)
 }
 
 // Handler para clique no menu mobile
 function handleMobileMenuClick(sectionId) {
   // Atualiza o indicativo visual imediatamente ao clicar
   activeSection.value = sectionId
-  scrollToSection(sectionId)
+
+  // Fecha o drawer primeiro
   rightDrawerOpen.value = false
+
+  // Aguarda o drawer fechar completamente antes de rolar (importante para mobile)
+  setTimeout(() => {
+    scrollToSection(sectionId)
+  }, 300)
 }
 
 // Observer para detectar seção ativa durante scroll
