@@ -38,17 +38,18 @@
 
         <q-space />
 
-        <!-- Menu de Navegação Horizontal -->
+        <!-- Menu de Navegação Horizontal (Âncoras) -->
         <div class="gt-sm row items-center q-gutter-x-lg">
-          <router-link
+          <a
             v-for="item in menuItems"
-            :key="item.path"
-            :to="`/${route.params.condominio}${item.path}`"
+            :key="item.id"
+            href="#"
             class="nav-link"
-            :class="{ active: isActive(item.path) }"
+            :class="{ active: activeSection === item.id }"
+            @click.prevent="scrollToSection(item.id)"
           >
             {{ item.label }}
-          </router-link>
+          </a>
         </div>
 
         <!-- Menu Mobile -->
@@ -82,11 +83,11 @@
 
         <q-item
           v-for="item in menuItems"
-          :key="item.path"
+          :key="item.id"
           clickable
-          :to="`/${route.params.condominio}${item.path}`"
-          :active="isActive(item.path)"
+          :active="activeSection === item.id"
           active-class="bg-grey-2"
+          @click="handleMobileMenuClick(item.id)"
         >
           <q-item-section>
             <q-item-label class="text-weight-medium">{{ item.label }}</q-item-label>
@@ -116,7 +117,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCondominioStore } from 'src/stores/condominioStore'
 
@@ -125,25 +126,67 @@ const router = useRouter()
 const store = useCondominioStore()
 
 const rightDrawerOpen = ref(false)
+const activeSection = ref('inicio')
 
+// Menu com IDs para navegação por âncoras
 const menuItems = [
-  { label: 'Início', path: '' },
-  { label: 'Avisos', path: '/avisos' },
-  { label: 'Eventos', path: '/eventos' },
-  { label: 'FAQ', path: '/faq' },
-  { label: 'Sobre', path: '/sobre' },
+  { label: 'Início', id: 'inicio' },
+  { label: 'Avisos', id: 'avisos' },
+  { label: 'Eventos', id: 'eventos' },
+  { label: 'FAQ', id: 'faq' },
+  { label: 'Sobre', id: 'sobre' },
 ]
 
 function toggleRightDrawer() {
   rightDrawerOpen.value = !rightDrawerOpen.value
 }
 
-function isActive(path) {
-  const currentPath = route.path
-  const expectedPath = `/${route.params.condominio}${path}`
-  return (
-    currentPath === expectedPath || (path === '' && currentPath === `/${route.params.condominio}`)
-  )
+// Scroll suave para seção
+function scrollToSection(sectionId) {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    const offset = 80 // altura do header
+    const elementPosition = element.getBoundingClientRect().top
+    const offsetPosition = elementPosition + window.pageYOffset - offset
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth',
+    })
+  }
+}
+
+// Handler para clique no menu mobile
+function handleMobileMenuClick(sectionId) {
+  scrollToSection(sectionId)
+  rightDrawerOpen.value = false
+}
+
+// Observer para detectar seção ativa durante scroll
+let observer = null
+
+function setupIntersectionObserver() {
+  const options = {
+    root: null,
+    rootMargin: '-80px 0px -50% 0px',
+    threshold: 0,
+  }
+
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        activeSection.value = entry.target.id
+      }
+    })
+  }, options)
+
+  // Observar todas as seções
+  menuItems.forEach((item) => {
+    const element = document.getElementById(item.id)
+    if (element) {
+      observer.observe(element)
+    }
+  })
 }
 
 // Carrega configuração do condomínio quando a rota muda
@@ -173,6 +216,15 @@ onMounted(() => {
     },
     { immediate: true, deep: true },
   )
+
+  // Setup observer após um pequeno delay para garantir que o DOM está pronto
+  setTimeout(setupIntersectionObserver, 500)
+})
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect()
+  }
 })
 </script>
 
